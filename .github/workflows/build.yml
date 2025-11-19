@@ -1,0 +1,39 @@
+name: Build CRDroid for Zenlte
+
+on:
+  workflow_dispatch:
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+    
+    steps:
+    - name: Checkout code
+      uses: actions/checkout@v2
+      
+    - name: Setup environment
+      run: |
+        sudo apt update
+        sudo apt install -y git curl python3 openjdk-11-jdk
+        echo "✅ Environment setup complete!"
+        
+    - name: Download Android Source
+      run: |
+        mkdir -p ~/bin
+        curl https://storage.googleapis.com/git-repo-downloads/repo > ~/bin/repo
+        chmod +x ~/bin/repo
+        export PATH="$HOME/bin:$PATH"
+        
+        # Initialize CRDroid source
+        mkdir crdroid && cd crdroid
+        repo init -u https://github.com/crdroidandroid/android.git -b 14.0 --depth=1
+        repo sync -c -j2 --no-clone-bundle --no-tags --force-sync
+        
+        echo "✅ Source download complete!"
+        
+    - name: Upload Source Code
+      uses: actions/upload-artifact@v2
+      with:
+        name: android-source
+        path: crdroid/
+        retention-days: 1
