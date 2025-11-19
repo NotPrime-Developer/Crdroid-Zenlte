@@ -9,12 +9,12 @@ jobs:
     
     steps:
     - name: Checkout code
-      uses: actions/checkout@v2
+      uses: actions/checkout@v4
       
     - name: Setup environment
       run: |
         sudo apt update
-        sudo apt install -y git curl python3 openjdk-11-jdk
+        sudo apt install -y git curl python3 openjdk-11-jdk ccache
         echo "✅ Environment setup complete!"
         
     - name: Download Android Source
@@ -30,9 +30,10 @@ jobs:
         repo sync -c -j2 --no-clone-bundle --no-tags --force-sync
         
         echo "✅ Source download complete!"
+        echo "Source size: $(du -sh .)"
         
     - name: Upload Source Code
-      uses: actions/upload-artifact@v2
+      uses: actions/upload-artifact@v4
       with:
         name: android-source
         path: crdroid/
